@@ -1171,3 +1171,72 @@ body {
 
 
 
+/* Add Story Button */
+.add-story {
+  flex: 0 0 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.add-story .story-image-container {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px dashed #666; /* Borda tracejada pra indicar "adicionar" */
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0; /* Fundo cinza claro */
+  transition: transform 0.2s;
+}
+
+.add-story .story-image-container:hover {
+  transform: scale(1.1);
+}
+
+.add-story-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #fff; /* Fundo branco pro ícone */
+}
+
+.add-story-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #666; /* Cor do ícone */
+}
+
+.add-story .story-name {
+  font-size: 0.75rem;
+  color: var(--text-color);
+  max-width: 70px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .add-story {
+    flex: 0 0 70px;
+  }
+
+  .add-story .story-image-container {
+    width: 60px;
+    height: 60px;
+  }
+
+  .add-story .story-name {
+    font-size: 0.7rem;
+    max-width: 60px;
+  }
+}

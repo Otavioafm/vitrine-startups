@@ -1,74 +1,14 @@
-import { Auth } from './auth.js';
-
-const auth = new Auth();
-
-// Função para verificar se o usuário está logado
-function isUserLoggedIn() {
-    return localStorage.getItem('isLoggedIn') === 'true';
-}
-
-// Função para abrir o popup
-function openPopup() {
-    const popup = document.getElementById('loginPopup');
-    const overlay = document.getElementById('popupOverlay');
-    if (popup && overlay) {
-        popup.classList.add('active');
-        overlay.classList.add('active');
-    }
-}
-
-// Função para fechar o popup
-function closePopup() {
-    const popup = document.getElementById('loginPopup');
-    const overlay = document.getElementById('popupOverlay');
-    if (popup && overlay) {
-        popup.classList.remove('active');
-        overlay.classList.remove('active');
-    }
-}
-
-// Função para lidar com o clique no botão "Investir"
-function handleInvestButtonClick(event) {
-    if (!auth.isLoggedIn()) {
-        event.preventDefault();
-        openPopup();
-    }
-}
-
-
-document.querySelectorAll('.invest-button').forEach(button => {
-    if (!isUserLoggedIn()) {
-        button.classList.add('disabled');
-    } else {
-        button.classList.remove('disabled');
-    }
-});
-
-// Função para lidar com o clique no botão "Like"
-function handleLikeClick(event) { /* Gerencia clique no botão curtir */ }
-
-// Função para alternar o estado de "like"
-function toggleLike(id) {
-    if (likedStartups.has(id)) {
-        likedStartups.delete(id);
-    } else {
-        likedStartups.add(id);
-    }
-    renderStartups(); // Atualiza a lista de startups
-}
-
-// Função para lidar com o clique no botão "Anunciar Startup"
-function handleStartupClick(event) {
-    if (!isUserLoggedIn()) {
-        event.preventDefault(); // Impede o comportamento padrão
-        openPopup();
-    } else {
-        window.location.href = 'anunciarStartup.html'; // Redireciona para o formulário
-    }
-}
-
 // Função para bloquear as abas para usuários não logados
-function blockTabsForNonLoggedInUsers() { /* Bloqueia abas para usuários não logados */ }
+function blockTabsForNonLoggedInUsers() {
+    // Placeholder: Adicione aqui a lógica pra bloquear abas se necessário
+    // Exemplo: Desativar abas específicas pra usuários não logados
+    const tabs = document.querySelectorAll('.details-tabs .tab');
+    tabs.forEach(tab => {
+        if (!isUserLoggedIn() && tab.dataset.tab !== 'sobre') { // Exemplo: só a aba "Sobre" é permitida
+            tab.classList.add('disabled');
+        }
+    });
+}
 
 // Função para lidar com a troca de abas
 function setupTabSwitching() {
@@ -104,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startupBtn = document.querySelector('.startup-btn');
     if (startupBtn) {
         startupBtn.addEventListener('click', (e) => {
-            handleStartupClick(e); // Passa o evento para a função
+            handleStartupClick(e); // Usa a função do app.js
         });
     }
 
@@ -121,22 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Adiciona eventos aos botões "Like"
-    const likeButtons = document.querySelectorAll('.like-button');
-    if (likeButtons) {
-        likeButtons.forEach((button) => {
-            button.addEventListener('click', (e) => {
-                handleLikeClick(e); // Passa o evento para a função
-            });
-        });
-    }
-
     // Redirecionar para hubLogin.html ao clicar no botão "Login" do popup
     const popupLoginButton = document.getElementById('popupLoginButton');
     if (popupLoginButton) {
         popupLoginButton.addEventListener('click', (e) => {
-            e.preventDefault(); // Impede o comportamento padrão do link
-            window.location.href = 'hubLogin.html'; // Redireciona para a página de login
+            e.preventDefault();
+            window.location.href = 'hubLogin.html';
         });
     }
 
@@ -144,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const popupCadastroButton = document.getElementById('popupCadastroButton');
     if (popupCadastroButton) {
         popupCadastroButton.addEventListener('click', (e) => {
-            e.preventDefault(); // Impede o comportamento padrão do link
-            window.location.href = 'hubCadastro.html'; // Redireciona para a página de cadastro
+            e.preventDefault();
+            window.location.href = 'hubCadastro.html';
         });
     }
 
@@ -154,6 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Configura a troca de abas
     setupTabSwitching();
-});
 
-export { openPopup, closePopup, handleInvestButtonClick };
+    // Aplica o estado "disabled" aos botões "Investir" se o usuário não estiver logado
+    document.querySelectorAll('.invest-button').forEach(button => {
+        if (!isUserLoggedIn()) {
+            button.classList.add('disabled');
+        } else {
+            button.classList.remove('disabled');
+        }
+    });
+});

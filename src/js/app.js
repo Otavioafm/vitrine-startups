@@ -87,8 +87,11 @@ let showExtraCategories = false;
 
 // Render category filters
 function renderCategories(categories) {
-  mainCategories = ['Todas', ...categories.slice(0, 3)];
-  extraCategories = categories.slice(3);
+  // Remove "Todas" do array de categorias pra evitar duplicação
+  const filteredCategories = categories.filter(category => category !== 'Todas');
+
+  mainCategories = ['Todas', ...filteredCategories.slice(0, 3)];
+  extraCategories = filteredCategories.slice(3);
 
   const mainCategoriesHTML = mainCategories.map(category => `
     <button class="category-button ${category === currentCategory ? 'active' : ''}"
@@ -189,7 +192,6 @@ function renderStartups() {
         <p class="card-description">${startup.descricao}</p>
         <div class="card-stats">
           <span>${startup.likes || 0} curtidas</span>
-          <span>${startup.shares || 0} compartilhamentos</span>
         </div>
         <div class="card-actions">
           <button class="details-button ${!isUserLoggedIn() ? 'disabled' : ''}" 
@@ -202,7 +204,7 @@ function renderStartups() {
               ${heartIcon(likedStartups.has(startup.id))} ${startup.likes || 0}
             </button>
             <button class="action-button" onclick="shareStartup(${startup.id})">
-              ${shareIcon} ${startup.shares || 0}
+              ${shareIcon}
             </button>
           </div>
         </div>
@@ -310,14 +312,17 @@ function toggleLike(startupId) {
     return;
   }
 
+  const startup = startups.find(s => s.id === startupId);
+  if (!startup) return;
+
   if (likedStartups.has(startupId)) {
+    // Descurtir: remove o like e diminui o número
     likedStartups.delete(startupId);
+    startup.likes = (startup.likes || 0) - 1;
   } else {
+    // Curtir: adiciona o like e aumenta o número
     likedStartups.add(startupId);
-    const startup = startups.find(s => s.id === startupId);
-    if (startup) {
-      startup.likes = (startup.likes || 0) + 1;
-    }
+    startup.likes = (startup.likes || 0) + 1;
   }
   renderStartups();
 }
@@ -341,6 +346,14 @@ function shareStartup(startupId) {
       console.log('Error sharing:', err);
     });
   }
+}
+
+function adicionarStory() {
+  if (!isUserLoggedIn()) {
+    openPopup();
+    return;
+  }
+  alert('Envie sua foto pra gente pelo Gmail: contato@sua-startup.com');
 }
 
 // Handle "Anunciar Startup" button
@@ -402,14 +415,28 @@ function renderStories() {
         return;
       }
       console.log('Renderizando stories...');
-      storiesContainer.innerHTML = stories.map(story => `
-        <div class="story ${story.viewed ? 'viewed' : ''}" onclick="openStoryModal(${story.startupId})">
-          <div class="story-image-container" style="--background-image: url('${story.logo}');">
-            <img src="${story.logo}" alt="${story.name}" class="story-image">
+      storiesContainer.innerHTML = `
+        ${isUserLoggedIn() ? `
+          <div class="story add-story" onclick="adicionarStory()">
+            <div class="story-image-container">
+              <div class="add-story-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 4v16m8-8H4"></path>
+                </svg>
+              </div>
+            </div>
+            <span class="story-name">Adicionar</span>
           </div>
-          <span class="story-name">${story.name.split(' ')[0]}</span>
-        </div>
-      `).join('');
+        ` : ''}
+        ${stories.map(story => `
+          <div class="story ${story.viewed ? 'viewed' : ''}" onclick="openStoryModal(${story.startupId})">
+            <div class="story-image-container" style="--background-image: url('${story.logo}');">
+              <img src="${story.logo}" alt="${story.name}" class="story-image">
+            </div>
+            <span class="story-name">${story.name.split(' ')[0]}</span>
+          </div>
+        `).join('')}
+      `;
     })
     .catch(error => console.error('Erro ao carregar stories:', error));
 }
